@@ -20,6 +20,10 @@ scriptings:
       name: PingMe 手动签到
       script_url: https://raw.githubusercontent.com/Moxi007/proxy-plugins/main/egern/scripts/PingMe.egern.js
       timeout: 300
+  - generic:
+      name: PingMe 清除失效账号
+      script_url: https://raw.githubusercontent.com/Moxi007/proxy-plugins/main/egern/scripts/PingMe.clear-invalid.egern.js
+      timeout: 120
 
 mitm:
   hostnames:
