@@ -236,6 +236,30 @@ async function notify(ctx, title, body) {
   });
 }
 
+function buildResultWidget(title, body) {
+  const lines = String(body || '').split('\n').filter(Boolean).slice(0, 18);
+  return {
+    type: 'widget',
+    padding: 16,
+    backgroundColor: '#111827',
+    children: [
+      {
+        type: 'text',
+        text: title,
+        font: { size: 'headline', weight: 'bold' },
+        textColor: '#FFFFFF'
+      },
+      { type: 'spacer', length: 8 },
+      ...lines.map(line => ({
+        type: 'text',
+        text: line,
+        font: { size: 'caption1' },
+        textColor: '#D1D5DB'
+      }))
+    ]
+  };
+}
+
 async function httpGet(ctx, url, headers) {
   try {
     const response = await ctx.http.get(url, { headers, timeout: HTTP_TIMEOUT });
@@ -364,8 +388,9 @@ export default async function(ctx) {
   const store = await loadStore(ctx);
   const ids = store.order.filter(id => store.accounts[id]);
   if (!ids.length) {
-    await notify(ctx, '⚠️ 未抓到任何账号', '请先打开 PingMe 触发抓包');
-    return;
+    const message = '请先打开 PingMe 触发抓包';
+    await notify(ctx, '⚠️ 未抓到任何账号', message);
+    return buildResultWidget('PingMe：未抓到任何账号', message);
   } else {
     const total = ids.length;
     const results = [];
@@ -375,9 +400,13 @@ export default async function(ctx) {
         results.push(text);
         if (idx < ids.length - 1) await sleep(ACCOUNT_GAP);
       }
-      await notify(ctx, `🎉 全部完成 (${total}个账号)`, results.join('\n———\n'));
+      const message = results.join('\n———\n');
+      await notify(ctx, `🎉 全部完成 (${total}个账号)`, message);
+      return buildResultWidget(`PingMe：全部完成 (${total}个账号)`, message);
     } catch (err) {
-      await notify(ctx, '❌ 任务异常', results.join('\n———\n') + '\n' + (err.error || String(err)));
+      const message = results.join('\n———\n') + '\n' + (err.error || String(err));
+      await notify(ctx, '❌ 任务异常', message);
+      return buildResultWidget('PingMe：任务异常', message);
     }
   }
 }
