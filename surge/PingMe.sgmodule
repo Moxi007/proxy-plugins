@@ -1,0 +1,10 @@
+#!name=PingMe 自动化签到+视频奖励
+#!desc=抓取 PingMe 账号请求参数，并定时执行签到与视频奖励任务。
+#!author=怎么肥事
+
+[Script]
+PingMe 参数抓取 = type=http-request, pattern=^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus, script-path=https://raw.githubusercontent.com/Moxi007/proxy-plugins/main/surge/scripts/PingMe.surge.js, requires-body=false, timeout=60
+PingMe 签到 = type=cron, cronexp="30 8,20 * * *", script-path=https://raw.githubusercontent.com/Moxi007/proxy-plugins/main/surge/scripts/PingMe.surge.js, timeout=300
+
+[MITM]
+hostname = %APPEND% api.pingmeapp.net
